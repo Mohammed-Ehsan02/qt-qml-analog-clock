@@ -148,6 +148,29 @@ Window {
                 color: "red"
                 transformOrigin: Item.Bottom
                 rotation: secondAngle
+
+				MouseArea {
+                    id: secondHandMouseArea
+                    anchors.fill: parent
+                    onPressed: {
+                        clockFace.settingTime = true;
+                        var point = mapToItem(clockFace, mouseX, mouseY);
+                        var diffX = -(point.x - clockFace.width / 2);
+                        var diffY = -(point.y - clockFace.height / 2);
+                        var angle = Math.atan2(diffY, diffX) * 180 / Math.PI;
+                        clockFace.initialAngle = angle - secondHand.rotation;
+                    }
+                    onPositionChanged: {
+                        if (clockFace.settingTime) {
+                            var point = mapToItem(clockFace, mouseX, mouseY);
+                            var diffX = -(point.x - clockFace.width / 2);
+                            var diffY = -(point.y - clockFace.height / 2);
+                            var angle = Math.atan2(diffY, diffX) * 180 / Math.PI;
+                            secondHand.rotation = angle - clockFace.initialAngle;
+                            clockFace.secondAngle = secondHand.rotation;
+                        }
+                    }
+                }
             }
 
 
