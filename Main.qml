@@ -38,37 +38,35 @@ Window {
             }
         }
 
-		 Canvas {
-                id: face
-                anchors.fill: parent
-                onPaint: {
-                    var ctx = getContext("2d");
-                    var centerX = width / 2;
-                    var centerY = height / 2;
-                    var radius = Math.min(centerX, centerY) - 10;
-
-
-                    ctx.save();
-                    ctx.font = "16px Arial";
-                    ctx.textAlign = "center";
-                    ctx.textBaseline = "middle";
-                    for (var number = 1; number <= 12; number++) {
-                        var angle = number * Math.PI / 6;
-                        var numeral = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"][number - 1];
-                        ctx.fillText(numeral, centerX + Math.cos(angle - Math.PI / 2) * radius * 0.85, centerY + Math.sin(angle - Math.PI / 2) * radius * 0.85);
-                    }
-                    ctx.restore();
-                    ctx.save();
-                    ctx.beginPath();
-                    for (var i = 0; i < 12; i++) {
-                        angle = i * Math.PI / 6;
-                        ctx.moveTo(centerX + Math.cos(angle) * (radius - 10), centerY + Math.sin(angle) * (radius - 10));
-                        ctx.lineTo(centerX + Math.cos(angle) * radius, centerY + Math.sin(angle) * radius);
-                    }
-                    ctx.stroke();
-                    ctx.restore();
+        Canvas {
+            id: face
+            anchors.fill: parent
+            onPaint: {
+                var ctx = getContext("2d");
+                var centerX = width / 2;
+                var centerY = height / 2;
+                var radius = Math.min(centerX, centerY) - 10;
+                ctx.save();
+                ctx.font = "16px Arial";
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                for (var number = 1; number <= 12; number++) {
+                    var angle = number * Math.PI / 6;
+                    var numeral = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"][number - 1];
+                    ctx.fillText(numeral, centerX + Math.cos(angle - Math.PI / 2) * radius * 0.85, centerY + Math.sin(angle - Math.PI / 2) * radius * 0.85);
                 }
+                ctx.restore();
+                ctx.save();
+                ctx.beginPath();
+                for (var i = 0; i < 12; i++) {
+                    angle = i * Math.PI / 6;
+                    ctx.moveTo(centerX + Math.cos(angle) * (radius - 10), centerY + Math.sin(angle) * (radius - 10));
+                    ctx.lineTo(centerX + Math.cos(angle) * radius, centerY + Math.sin(angle) * radius);
+                }
+                ctx.stroke();
+                ctx.restore();
             }
+        }
 
 
         Rectangle {
@@ -116,27 +114,42 @@ Window {
                 rotation: minuteAngle
 
                 MouseArea {
-                    id: minuteHandMouseArea
-                    anchors.fill: parent
-                    onPressed: {
-                        clockFace.settingTime = true;
-                        var point = mapToItem(clockFace, mouseX, mouseY);
-                        var diffX = -(point.x - clockFace.width / 2);
-                        var diffY = -(point.y - clockFace.height / 2);
-                        var angle = Math.atan2(diffY, diffX) * 180 / Math.PI;
-                        clockFace.initialAngle = angle - minuteHand.rotation;
-                    }
-                    onPositionChanged: {
-                        if (clockFace.settingTime) {
-                            var point = mapToItem(clockFace, mouseX, mouseY);
-                            var diffX = -(point.x - clockFace.width / 2);
-                            var diffY = -(point.y - clockFace.height / 2);
-                            var angle = Math.atan2(diffY, diffX) * 180 / Math.PI;
-                            minuteHand.rotation = angle - clockFace.initialAngle;
-                            clockFace.minuteAngle = minuteHand.rotation;
-                        }
-                    }
-                }
+					id: minuteHandMouseArea
+					anchors.fill: parent
+					onPressed: {
+						clockFace.settingTime = true;
+						var point = mapToItem(clockFace, mouseX, mouseY);
+						var diffX = -(point.x - clockFace.width / 2);
+						var diffY = -(point.y - clockFace.height / 2);
+						var angle = Math.atan2(diffY, diffX) * 180 / Math.PI;
+						clockFace.initialAngle = angle - minuteHand.rotation;
+					}
+					onPositionChanged: {
+						if (clockFace.settingTime) {
+							var point = mapToItem(clockFace, mouseX, mouseY);
+							var diffX = -(point.x - clockFace.width / 2);
+							var diffY = -(point.y - clockFace.height / 2);
+							var angle = Math.atan2(diffY, diffX) * 180 / Math.PI;
+							var adjustedAngle = angle - clockFace.initialAngle;
+
+							adjustedAngle = (adjustedAngle + 360) % 360;
+							minuteHand.rotation = adjustedAngle;
+							var minuteChange = adjustedAngle - clockFace.minuteAngle;
+							if (minuteChange < -180) {
+                                minuteChange += 360;
+							} else if (minuteChange > 180) {
+                                minuteChange -= 360;
+							}
+							
+							clockFace.minuteAngle = adjustedAngle;
+
+							var hoursPassed = minuteChange / 360;
+                            clockFace.hourAngle += hoursPassed * 30;
+							clockFace.hourAngle = (clockFace.hourAngle + 360) % 360;
+							hourHand.rotation = clockFace.hourAngle;
+						}
+					}
+				}
             }
 
             Rectangle {
