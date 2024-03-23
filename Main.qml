@@ -87,26 +87,32 @@ Window {
             MouseArea {
                 id: hourHandMouseArea
                 anchors.fill: parent
-                onPressed: {
+                 onPressed: {
                     clockFace.settingTime = true;
-                    if (clockFace.settingTime) {
-                        // Save the initial mouse position
-                        clockFace.dragStartX = mouseX;
-                        clockFace.dragStartY = mouseY;
-                    }
+                    var dx = mouseX - clockFace.width / 2;
+                    var dy = mouseY - clockFace.height / 2;
+                    clockFace.initialAngle = Math.atan2(dy, -dx) * 180 / Math.PI;
+                    clockFace.initialAngle = (clockFace.initialAngle < 0 ? 360 + clockFace.initialAngle : clockFace.initialAngle) - hourHand.rotation;
                 }
-
                 onPositionChanged: {
                     if (clockFace.settingTime) {
-                        var centerX = clockFace.width / 2;
-                        var centerY = clockFace.height / 2;
-                        var dx = mouseX - clockFace.dragStartX;
-                        var dy = mouseY - clockFace.dragStartY;
-                        var angleDiff = Math.atan2(dy, dx) * 180 / Math.PI;
-                        clockFace.hourAngle += angleDiff;
-                        hourHand.rotation = clockFace.hourAngle;
-                        clockFace.dragStartX = mouseX;
-                        clockFace.dragStartY = mouseY;
+                        var dx = mouseX - clockFace.width / 2;
+                        var dy = mouseY - clockFace.height / 2;
+                        var angle = Math.atan2(dy, -dx) * 180 / Math.PI; // Note the -dx for correct orientation
+                        angle = (angle + 360) % 360; // Normalize angle to be in the range [0, 360]
+                        hourHand.rotation = angle;
+                        clockFace.hourAngle = angle;
+                        
+                        // If you want the minute hand to adjust as the hour hand is dragged,
+                        // calculate the minute angle based on the hour angle.
+                        // This block can be removed if you want the minute hand to stay static when dragging the hour hand.
+                        var hours = angle / 30;
+                        var exactMinutes = hours * 60;
+                        clockFace.minuteAngle = exactMinutes % 60 * 6;
+                        minuteHand.rotation = clockFace.minuteAngle;
+                        // Optionally, you may want to update the second hand if needed
+                        clockFace.secondAngle = 0; // Reset seconds when setting time manually
+                        secondHand.rotation = clockFace.secondAngle;
                     }
                 }
             }
@@ -125,19 +131,27 @@ Window {
             MouseArea {
                 id: minuteHandMouseArea
                 anchors.fill: parent
-                onPressed: { clockFace.settingTime = true; }
+                onPressed: {
+                    clockFace.settingTime = true;
+                    var dx = mouseX - clockFace.width / 2;
+                    var dy = mouseY - clockFace.height / 2;
+                    clockFace.initialAngle = Math.atan2(dy, -dx) * 180 / Math.PI;
+                    clockFace.initialAngle = (clockFace.initialAngle < 0 ? 360 + clockFace.initialAngle : clockFace.initialAngle) - minuteHand.rotation;
+                }
                 onPositionChanged: {
                     if (clockFace.settingTime) {
-                        var dx = mouseX - face.width / 2;
-                        var dy = mouseY - face.height / 2;
-                        var angle = Math.atan2(dy, dx) * 180 / Math.PI;
-                        if (angle < 0)
-                            angle += 360;
-                        angle -= 90;
-                        if (angle < 0)
-                            angle += 360;
-                        clockFace.minuteAngle = angle;
+                        var dx = mouseX - clockFace.width / 2;
+                        var dy = mouseY - clockFace.height / 2;
+                        var angle = Math.atan2(dy, -dx) * 180 / Math.PI; // Note the -dx for correct orientation
+                        angle = (angle + 360) % 360; // Normalize angle to be in the range [0, 360]
                         minuteHand.rotation = angle;
+                        clockFace.minuteAngle = angle;
+                        
+                        // Update the hour angle based on the new minute hand position
+                        // Assuming you want the hour hand to move slightly as the minute hand moves
+                        var minutes = angle / 6;
+                        clockFace.hourAngle = ((clockFace.hourAngle + minutes / 2) % 720) / 60 * 30;
+                        hourHand.rotation = clockFace.hourAngle % 360;
                     }
                 }
             }
