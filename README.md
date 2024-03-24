@@ -1,7 +1,3 @@
-Certainly! Here's a structured `README.md` that you can use for your GitHub repository. It provides an overview of your project, its features, and instructions on how to run it.
-
----
-
 # Interactive Analog Clock in QML
 
 ## Project Overview
