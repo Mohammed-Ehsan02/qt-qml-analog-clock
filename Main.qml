@@ -84,6 +84,7 @@ Window {
             y: face.height / 2 - 60
             width: 10
             height: 60
+            radius: 10
             color: "black"
             transformOrigin: Item.Bottom
             rotation: hourAngle
@@ -118,6 +119,7 @@ Window {
                 y: face.height / 2 - 80
                 width: 6
                 height: 80
+                radius: 10
                 color: "black"
                 transformOrigin: Item.Bottom
                 rotation: minuteAngle
@@ -167,6 +169,7 @@ Window {
                 y: face.height / 2 - 100
                 width: 2
                 height: 100
+                radius: 10
                 color: "red"
                 transformOrigin: Item.Bottom
                 rotation: secondAngle
