@@ -52,8 +52,8 @@ Window {
                 ctx.textBaseline = "middle";
                 for (var number = 1; number <= 12; number++) {
                     var angle = number * Math.PI / 6;
-                    var numeral = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"][number - 1];
-                    ctx.fillText(numeral, centerX + Math.cos(angle - Math.PI / 2) * radius * 0.85, centerY + Math.sin(angle - Math.PI / 2) * radius * 0.85);
+                    var numeral = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"][number - 1];
+                    ctx.fillText(numeral, centerX + Math.cos(angle - Math.PI / 2) * radius * 0.83, centerY + Math.sin(angle - Math.PI / 2) * radius * 0.83);
                 }
                 ctx.restore();
                 ctx.save();
@@ -65,6 +65,15 @@ Window {
                 }
                 ctx.stroke();
                 ctx.restore();
+                ctx.save();
+                ctx.beginPath();
+                for (var j = 0; j < 60; j++) {
+                    angle = j * Math.PI / 30;
+                    ctx.moveTo(centerX + Math.cos(angle) * (radius - 5), centerY + Math.sin(angle) * (radius - 5));
+                    ctx.lineTo(centerX + Math.cos(angle) * radius, centerY + Math.sin(angle) * radius);
+                }
+                ctx.stroke();
+                ctx.restore();
             }
         }
 
@@ -72,7 +81,7 @@ Window {
         Rectangle {
             id: hourHand
             x: face.width / 2 - 5
-            y: face.height / 2 - 50
+            y: face.height / 2 - 60
             width: 10
             height: 60
             color: "black"
@@ -106,7 +115,7 @@ Window {
 		Rectangle {
                 id: minuteHand
                 x: face.width / 2 - 3
-                y: face.height / 2 - 70
+                y: face.height / 2 - 80
                 width: 6
                 height: 80
                 color: "black"
@@ -155,7 +164,7 @@ Window {
             Rectangle {
                 id: secondHand
                 x: face.width / 2 - 1
-                y: face.height / 2 - 90
+                y: face.height / 2 - 100
                 width: 2
                 height: 100
                 color: "red"
