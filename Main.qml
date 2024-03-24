@@ -63,6 +63,7 @@ Window {
                     ctx.moveTo(centerX + Math.cos(angle) * (radius - 10), centerY + Math.sin(angle) * (radius - 10));
                     ctx.lineTo(centerX + Math.cos(angle) * radius, centerY + Math.sin(angle) * radius);
                 }
+                ctx.lineWidth = 2;
                 ctx.stroke();
                 ctx.restore();
                 ctx.save();
@@ -77,14 +78,13 @@ Window {
             }
         }
 
-
         Rectangle {
             id: hourHand
             x: face.width / 2 - 5
             y: face.height / 2 - 60
             width: 10
             height: 60
-            radius: 10
+            radius: 50
             color: "black"
             transformOrigin: Item.Bottom
             rotation: hourAngle
@@ -229,8 +229,6 @@ Window {
                     }
                 }
             }
-
-
         }
 
     Component.onCompleted: {
